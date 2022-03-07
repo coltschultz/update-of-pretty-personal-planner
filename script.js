@@ -1,5 +1,13 @@
 
-var hours = [nine, ten, eleven, twelve];
+
+
+
+var nineC = { time: nine, text:"" }
+var tenC = { time: ten, text:"" }
+var elevenC = { time: eleven, text:"" }
+var twelveC = { time: twelve, text:"" }
+var schedule = [nineC, tenC, elevenC, twelveC];
+
 
 var dateBox = document.querySelector('#date');
 var nine = document.querySelector('#nineContent');
@@ -11,6 +19,7 @@ var two = document.querySelector('#twoContent');
 var three = document.querySelector('#threeContent');
 var four = document.querySelector('#fourContent');
 var five = document.querySelector('#fiveContent');
+var hours = [nine, ten, eleven, twelve];    
 
 var thisHour = moment().hour();
 var year = moment().year()
@@ -18,11 +27,15 @@ var month = moment().month()
 var day = moment().date()
 var thisDay = moment().dayOfYear();
 
-dateBox.innerHTML = "<p>" + month + "-" + day + "-" + year + "</p>"
-    // var shownDate = document.createElement("p");
-    // shownDate.textContent = "asdf" + thisDay;
-    // dateBox.appendChild(showdate);
+var setDate = function() {
+dateBox.innerHTML = "<p>Today's Date (Month/Day/Year): " + month + "-" + day + "-" + year + "</p>"
+}
 
+setDate();
+
+var saveAll = function () {
+    localStorage.setItem("schedule", JSON.stringify(schedule));
+}
 
 var togglePast = function(hour) {
     $(hour).removeClass("present");
@@ -43,23 +56,23 @@ var checkTime = function(hour) {
     }
 }
 
-var editContent = function(Time) {
-    var contentSelected = document.querySelector(".content[data-time='" + Time + "']");
-
-    var content = contentSelected.querySelector("p").textContent;
-}
-
-
 // Handle the clicks of content
 $(".content").on("click", "p", function() {
     console.log('success');
     // get current text of p element
+
+    var element = $(this);
+    var index = element.data("index");
+
     var text = $(this)
       .text()
       .trim();
+    
+    
+
   
     // replace p element with a new textarea
-    var textInput = $("<textarea>").val(text);
+    var textInput = $("<textarea>").attr("data-index",index).val(text);
     $(this).replaceWith(textInput);
   
     // auto focus new element
@@ -68,17 +81,26 @@ $(".content").on("click", "p", function() {
 
   // editable field was un-focused
 $(".content").on("blur", "textarea", function() {
-    // get current value of textarea
+
+    var element = $(this);
+    var index = element.data("index");
+
     var text = $(this).val();
   
 
       var textP = $("<p>")
       .addClass("m-1")
       .text(text);
-  
+
+
+
+      schedule[index].text = text;
+        saveAll();
     // replace textarea with new content
     $(this).replaceWith(textP);
 });
+
+
 
 checkTime(nine);
 checkTime(ten);
@@ -92,9 +114,7 @@ checkTime(twelve);
 
 
 
-console.log('dateNow', dateNow);
-console.log('thisHour', thisHour);
-console.log('thisDay', thisDay)
+
 
 
 
