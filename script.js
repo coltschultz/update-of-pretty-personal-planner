@@ -2,10 +2,10 @@
 
 
 
-var nineC = { time: nine, text:"" }
-var tenC = { time: ten, text:"" }
-var elevenC = { time: eleven, text:"" }
-var twelveC = { time: twelve, text:"" }
+var nineC = { time: "nine", text:"" }
+var tenC = { time: "ten", text:"" }
+var elevenC = { time: "eleven", text:"" }
+var twelveC = { time: "twelve", text:"" }
 var schedule = [nineC, tenC, elevenC, twelveC];
 
 
@@ -36,6 +36,12 @@ setDate();
 var saveAll = function () {
     localStorage.setItem("schedule", JSON.stringify(schedule));
 }
+
+var loadAll = function() {
+    tasks = JSON.parse(localStorage.getItem("schedule"));
+}
+
+loadAll();
 
 var togglePast = function(hour) {
     $(hour).removeClass("present");
@@ -99,6 +105,14 @@ $(".content").on("blur", "textarea", function() {
     // replace textarea with new content
     $(this).replaceWith(textP);
 });
+
+var populate = function(obj) {
+    var place = document.querySelector("#" + obj.time);
+    console.log(place);
+
+    place.textContent = obj.text;
+}
+
 
 
 
