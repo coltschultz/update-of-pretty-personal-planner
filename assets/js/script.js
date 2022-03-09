@@ -80,7 +80,6 @@ loadAll();
         $(hour).addClass("future");
     }
 
-    console.log(thisHour);
     var checkTime = function(hour) {
         if (thisHour > hour.dataset.time) { 
             togglePast(hour);
@@ -102,7 +101,6 @@ loadAll();
 
         var textInput = $("<textarea>").attr("data-index",index).val(text);
         $(this).replaceWith(textInput);
-        console.log(index);
 
     }); 
 
