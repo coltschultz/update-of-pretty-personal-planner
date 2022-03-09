@@ -1,12 +1,14 @@
+var nineC = { time: "nine", text:"", index: 0, hr: 9};
+var tenC = { time: "ten", text:"", index: 1, hr: 10};
+var elevenC = { time: "eleven", text:"", index: 2, hr: 11};
+var twelveC = { time: "twelve", text:"", index: 3, hr: 12};
+var oneC = { time: "one", text:"", index: 4, hr: 13};
+var twoC = { time: "two", text:"", index: 5, hr: 14};
+var threeC = { time: "three", text:"", index: 6, hr: 15};
+var fourC = { time: "four", text:"", index: 7, hr: 16};
+var fiveC = { time: "five", text:"", index: 8, hr: 17};
 
-
-
-
-var nineC = { time: "nine", text:"" }
-var tenC = { time: "ten", text:"" }
-var elevenC = { time: "eleven", text:"" }
-var twelveC = { time: "twelve", text:"" }
-var schedule = [nineC, tenC, elevenC, twelveC];
+var schedule = [nineC, tenC, elevenC, twelveC, oneC, twoC, threeC, fourC, fiveC];
 
 
 var dateBox = document.querySelector('#date');
@@ -19,129 +21,118 @@ var two = document.querySelector('#twoContent');
 var three = document.querySelector('#threeContent');
 var four = document.querySelector('#fourContent');
 var five = document.querySelector('#fiveContent');
-var hours = [nine, ten, eleven, twelve];    
+var hours = [nine, ten, eleven, twelve, one, two, three, four, five];    
 
 var thisHour = moment().hour();
-var year = moment().year()
-var month = moment().month()
-var day = moment().date()
+var year = moment().year();
+var month = moment().month();
+var day = moment().date();
 var thisDay = moment().dayOfYear();
 
-var setDate = function() {
-dateBox.innerHTML = "<p>Today's Date (Month/Day/Year): " + month + "-" + day + "-" + year + "</p>"
-}
+parsedSchedule = JSON.parse(localStorage.getItem("schedule" + thisDay));
 
-setDate();
-
+// Local Storage Save/Load
 var saveAll = function () {
-    localStorage.setItem("schedule", JSON.stringify(schedule));
+    localStorage.setItem("schedule" + thisDay, JSON.stringify(schedule));
 }
 
 var loadAll = function() {
-    tasks = JSON.parse(localStorage.getItem("schedule"));
+    if (parsedSchedule) {
+        schedule = parsedSchedule
+    }
 }
 
 loadAll();
 
-var togglePast = function(hour) {
-    $(hour).removeClass("present");
-    $(hour).addClass("past");
-}
 
-var toggleFuture = function(hour) {
-    $(hour).removeClass("present");
-    $(hour).addClass("future");
-}
 
-var checkTime = function(hour) {
-    if (thisHour > hour.dataset.time) { 
-        togglePast(hour);
+// Populate from Local Storage
+    var populate = function(obj) {
+        var place = document.querySelector("#" + obj.time);
+        var index = obj.index
+
+        if (schedule[index].text.length > 0) {
+        place.textContent = schedule[index].text;
+
+        }
     }
-    else if (thisHour < hour.dataset.time) {
-        toggleFuture(hour);
+    for (var i = 0; i < schedule.length; i++) {
+        populate(schedule[i]);
     }
-}
 
-// Handle the clicks of content
-$(".content").on("click", "p", function() {
-    console.log('success');
-    // get current text of p element
+// Display the Date at the Top of the Screen
+    todaysDate = moment().format("dddd, MMMM Do YYYY, h:mm a");
 
-    var element = $(this);
-    var index = element.data("index");
+    setDate = function() {
+        dateBox.innerHTML = "<p>" + todaysDate + "</p>"
+        }
+        
+    setDate();
 
-    var text = $(this)
-      .text()
-      .trim();
+// Change the colors of hour depending on Past, Present, Future (Default: Present)
+    var togglePast = function(hour) {
+        $(hour).removeClass("present");
+        $(hour).addClass("past");
+    }
+
+    var toggleFuture = function(hour) {
+        $(hour).removeClass("present");
+        $(hour).addClass("future");
+    }
+
+    console.log(thisHour);
+    var checkTime = function(hour) {
+        if (thisHour > hour.dataset.time) { 
+            togglePast(hour);
+        }
+        else if (thisHour < hour.dataset.time) {
+            toggleFuture(hour);
+        }
+    }
+
+// Handle the Editing of Content
+    $(".content").on("click", "p", function() {
+
+        var element = $(this);
+        var index = element.data("index");
+
+        var text = $(this)
+        .text()
+        .trim();
+
+        var textInput = $("<textarea>").attr("data-index",index).val(text);
+        $(this).replaceWith(textInput);
+        console.log(index);
+
+    }); 
+
+    $(".content").on("blur", "textarea", function() {
+
+        var element = $(this);
+        var index = element.data("index");
+
+        var text = $(this).val();
     
-    
+        var textP = $("<p class='textContent' data-index=" + index + ">")
+        .addClass("m-1")
+        .text(text);
 
-  
-    // replace p element with a new textarea
-    var textInput = $("<textarea>").attr("data-index",index).val(text);
-    $(this).replaceWith(textInput);
-  
-    // auto focus new element
-    textInput.trigger("focus");
-  }); 
-
-  // editable field was un-focused
-$(".content").on("blur", "textarea", function() {
-
-    var element = $(this);
-    var index = element.data("index");
-
-    var text = $(this).val();
-  
-
-      var textP = $("<p>")
-      .addClass("m-1")
-      .text(text);
-
-
-
-      schedule[index].text = text;
+        $(this).replaceWith(textP);
+        schedule[index].text = text;
         saveAll();
-    // replace textarea with new content
-    $(this).replaceWith(textP);
-});
-
-var populate = function(obj) {
-    var place = document.querySelector("#" + obj.time);
-    console.log(place);
-
-    place.textContent = obj.text;
-}
+    });
 
 
+// Save when floppy disk is clicked
 
+    $(".saveBtn").on("click", "img", function() {
+    console.log('Your work was saved.');
+    saveAll();
 
-checkTime(nine);
-checkTime(ten);
-checkTime(eleven);
-checkTime(twelve);
+    }); 
 
+// Adjust colors according to the time
 
-// Determine if there's already localstorage for this date, if so load, if not, continue:
-// Setup object array for that day to store in localstorage under the date
-
-
-
-
-
-
-
-
-
-// Display the date at the top of the calender
-
-// Determine the current time
-// Color code time blocks according to past/present/future hour 9AM-5AM
-// Print timeblocks to page
-
-// When you click an hour, you can edit the hour
-// When you an hour blurs, save that hour and update localstorage
-
-// When the SaveBtn is clicked, is anything necessary
-
-// Date is 1 month behind
+    for (var i = 0; i < hours.length; i++) {
+        checkTime(hours[i]);
+    }
