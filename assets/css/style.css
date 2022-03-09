@@ -69,10 +69,11 @@ textarea {
   /* font-size: 20px; */
   /* transition: all 0.3s ease-in-out; */
   background-color: grey;
+  cursor: pointer;
 }
 
 .saveBtn img {
-  height: 50px;
+  height: 40px;
   margin: auto;
 }
 
